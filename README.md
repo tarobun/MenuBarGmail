@@ -5,10 +5,9 @@
 
 Gmail notification in Menu Bar for Mac.
 
-Unread messages of Gmail are checked and the number of unread messages
-is shown in the menu bar.
+Unread messages of Gmail are checked and the number of unread messages is shown in the menu bar.
 
-Default setting checks only Inbox.
+Default setting checks only Inbox. \
 Multi-label can be set to be checked.
 
 Short information of unread messages are shown in the menu.
@@ -44,31 +43,28 @@ When you start MenuBarGmail, an authentication page will be open in a browser.
 
 The following menus are available:
 
-* About: Show information of MenuBarGmail.
-* Inbox: Current account.
+* **About**: Show information of MenuBarGmail.
+* **Inbox**: Current account.
     * Gmail page will be open by clicking this.
-* Check now: Check emails now.
-* Reconnect: Renew account authentication.
+* **Check now**: Check emails now.
+* **Reconnect**: Renew account authentication.
     * If you want to change an account, login to other account in default browser, then click Reconnect.
-* Unread messages: Number and details of unread messages.
-* Set checking interval: Set interval to check mails (Default: 60 sec).
-* Set labels: Set labels (comma-separated) to be checked (Default: "").
-* Set filter: Set filter for mail search (Default: "").
-* Mail notification: Toggle if a notification is shown or not when the new message comes.
-* Start at login: Toggle if starting at login or not.
-* Uninstall: Uninstall MenuBarGmail.
-* Quit: Quit MenuBarGmail.
+* **Unread messages**: Number and details of unread messages.
+* **Set checking interval**: Set interval to check mails (Default: 60 sec).
+* **Set labels**: Set labels (comma-separated) to be checked (Default: "").
+* **Set filter**: Set filter for mail search (Default: "").
+* **Mail notification**: Toggle if a notification is shown or not when the new message comes.
+* **Start at login**: Toggle if starting at login or not.
+* **Uninstall**: Uninstall MenuBarGmail.
+* **Quit**: Quit MenuBarGmail.
 
 If both labels and filter are not set (empty), the inbox is checked by default.
 
 For filter details, refer: [Advanced search - Gmail Help](https://support.google.com/mail/answer/7190).
 
-Message details (Date, From, Subject, Short summary of message) can be seen as a submenu of **Unread message**.
-If more than one email is unread in a same thread, only the last is shown.
+Message details (Date, From, Subject, Short summary of message) can be seen as a submenu of **Unread message**. If more than one email is unread in a same thread, only the last is shown.
 
-If two different labels are set, each label is shown as a submenu then details are shown as a submenu of it.
-A pop up window with full details will be shown by clicking these submenus.
-On the window, **Mark as read** and **Open in browser** buttons are available.
+If two different labels are set, each label is shown as a submenu then details are shown as a submenu of it. A pop up window with full details will be shown by clicking these submenus. On the window, **Mark as read** and **Open in browser** buttons are available.
 
 # How to build
 
