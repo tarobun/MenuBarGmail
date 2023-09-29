@@ -49,7 +49,7 @@ GOOGLE_CLIENT_ID = '401979756927-453hrgvmgjik9tqqq744s6pg7762hfel'\
 GOOGLE_CLIENT_SECRET = 'sso7NdujDxkT92bxK2u-RPGi'
 MENU_BAR_ICON = ['MenuBarGmailMenuBarIcon.png', 'MenuBarGmailMenuBarIconForDark.png']
 
-MENU_ACCOUNT = 'Account'
+MENU_INBOX = 'Inbox'
 MENU_CHECK_NOW = 'Check now'
 MENU_RECONNECT = 'Reconnect'
 MENU_UNREAD_MESSAGES = 'Unread messages'
@@ -83,7 +83,7 @@ class MenuBarGmail(rumps.App):
         # Application setup
         super(MenuBarGmail, self).__init__(type(self).__name__, title=None, icon=self.menubar_icon())
         self.menu = [
-            MENU_ACCOUNT,
+            MENU_INBOX,
             MENU_CHECK_NOW,
             MENU_RECONNECT,
             MENU_UNREAD_MESSAGES,
@@ -128,7 +128,7 @@ class MenuBarGmail(rumps.App):
     def settings_state(self, name):
         return True if name in self.settings and self.settings[name] == '1' else False
 
-    @rumps.clicked(MENU_ACCOUNT)
+    @rumps.clicked(MENU_INBOX)
     def account(self, sender):
         self.open_gmail()
 
@@ -504,7 +504,7 @@ class MenuBarGmail(rumps.App):
 
         prof = self.timeout_execute(service.users().getProfile(userId='me'))
         self.address = prof['emailAddress']
-        self.menu[MENU_ACCOUNT].title = 'Account: %s' % self.address
+        self.menu[MENU_INBOX].title = 'Inbox: %s' % self.address
 
         return service
 
