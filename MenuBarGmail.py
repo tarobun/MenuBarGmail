@@ -73,8 +73,6 @@ class MenuBarGmail(rumps.App):
         super(MenuBarGmail, self).__init__(type(self).__name__, title=None,
                                            icon=self.menu_bar_icon[int(self.settings.get('menubariconfordark', 1))])
         self.menu = [
-            'About',
-            None,
             'Account',
             'Check now',
             'Reconnect',
@@ -88,6 +86,7 @@ class MenuBarGmail(rumps.App):
             None,
             'Uninstall',
             None,
+            'About',
         ]
 
         # Other class variables
