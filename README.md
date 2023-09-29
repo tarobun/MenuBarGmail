@@ -37,45 +37,38 @@ This function will remove
 
 # Usage
 
-When you start MenuBarGmail,
-an authentication page will be open in a browser.
+When you start MenuBarGmail, an authentication page will be open in a browser.
 **Accept** it, then a following icon will appear in the menubar.
 
 ![MenuBarGmailMenuBarIcon.png](MenuBarGmailMenuBarIcon.png)
 
-Following menus are available:
+The following menus are available:
 
 * About: Show information of MenuBarGmail.
-* Account: Current account.
+* Inbox: Current account.
     * Gmail page will be open by clicking this.
-* Check now: Check mails now.
+* Check now: Check emails now.
 * Reconnect: Renew account authentication.
     * If you want to change an account, login to other account in default browser, then click Reconnect.
 * Unread messages: Number and details of unread messages.
-* Set checking interval: Set interval to check mails (Default: 60 (sec)).
+* Set checking interval: Set interval to check mails (Default: 60 sec).
 * Set labels: Set labels (comma-separated) to be checked (Default: "").
-* Set filter: Set filter for mail search (Defalt: "").
+* Set filter: Set filter for mail search (Default: "").
 * Mail notification: Toggle if a notification is shown or not when the new message comes.
 * Start at login: Toggle if starting at login or not.
 * Uninstall: Uninstall MenuBarGmail.
 * Quit: Quit MenuBarGmail.
 
-If both labels and filter are not set (empty),
-INBOX is checked (this is default).
+If both labels and filter are not set (empty), the inbox is checked by default.
 
 For filter details, refer: [Advanced search - Gmail Help](https://support.google.com/mail/answer/7190).
 
-Message details (Date, From, Subject, Short summary of message)
-can be seen as a submenu of **Unread message**.
+Message details (Date, From, Subject, Short summary of message) can be seen as a submenu of **Unread message**.
+If more than one email is unread in a same thread, only the last is shown.
 
-If more than one mails are unread in a same thread, only the last is shown.
-
-If two different labels are set,
-each label is shown as a submenu then details are shown as a submenu of it.
-
-A pop up window with full details will be shown
-by clicking these submenus.
-On the window, **Mark as read** and **Open in browser** buttons are availabl.
+If two different labels are set, each label is shown as a submenu then details are shown as a submenu of it.
+A pop up window with full details will be shown by clicking these submenus.
+On the window, **Mark as read** and **Open in browser** buttons are available.
 
 # How to build
 
