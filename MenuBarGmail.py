@@ -50,6 +50,18 @@ GOOGLE_CLIENT_ID = '401979756927-453hrgvmgjik9tqqq744s6pg7762hfel'\
 GOOGLE_CLIENT_SECRET = 'sso7NdujDxkT92bxK2u-RPGi'
 MENU_BAR_ICON = ['MenuBarGmailMenuBarIcon.png', 'MenuBarGmailMenuBarIconForDark.png']
 
+MENU_ACCOUNT = 'Account'
+MENU_CHECK_NOW = 'Check now'
+MENU_RECONNECT = 'Reconnect'
+MENU_UNREAD_MESSAGES = 'Unread messages'
+MENU_SET_CHECKING_INTERVAL = 'Set checking interval'
+MENU_SET_LABELS = 'Set labels'
+MENU_SET_FILTER = 'Set filter'
+MENU_MENUBAR_ICON_FOR_DARK = 'Menubar icon for dark'
+MENU_MAIL_NOTIFICATION = 'Mail notification'
+MENU_START_AT_LOGIN = 'Start at login'
+MENU_UNINSTALL = 'Uninstall'
+MENU_ABOUT = 'About'
 
 class MenuBarGmail(rumps.App):
     def __init__(self, autostart=True):
@@ -73,20 +85,22 @@ class MenuBarGmail(rumps.App):
         super(MenuBarGmail, self).__init__(type(self).__name__, title=None,
                                            icon=self.menu_bar_icon[int(self.settings.get('menubariconfordark', 1))])
         self.menu = [
-            'Account',
-            'Check now',
-            'Reconnect',
-            'Unread messages',
-            'Set checking interval',
-            'Set labels',
-            'Set filter',
-            'MenuBar Icon for Dark',
-            'Mail notification',
-            'Start at login',
+            MENU_ACCOUNT,
+            MENU_CHECK_NOW,
+            MENU_RECONNECT,
+            MENU_UNREAD_MESSAGES,
             None,
-            'Uninstall',
+            MENU_SET_CHECKING_INTERVAL,
+            MENU_SET_LABELS,
+            MENU_SET_FILTER,
             None,
-            'About',
+            MENU_MENUBAR_ICON_FOR_DARK,
+            MENU_MAIL_NOTIFICATION,
+            MENU_START_AT_LOGIN,
+            None,
+            MENU_UNINSTALL,
+            None,
+            MENU_ABOUT,
         ]
 
         # Other class variables
@@ -97,16 +111,15 @@ class MenuBarGmail(rumps.App):
         self.service = None
         self.is_first = True
 
-        if 'notification' in self.settings\
-                and self.settings['notification'] == '1':
-            self.menu['Mail notification'].state = True
+        if 'notification' in self.settings and self.settings['notification'] == '1':
+            self.menu[MENU_MAIL_NOTIFICATION].state = True
         else:
-            self.menu['Mail notification'].state = False
-        if 'startatlogin' in self.settings\
-                and self.settings['startatlogin'] == '1':
-            self.menu['Start at login'].state = True
+            self.menu[MENU_MAIL_NOTIFICATION].state = False
+
+        if 'startatlogin' in self.settings and self.settings['startatlogin'] == '1':
+            self.menu[MENU_START_AT_LOGIN].state = True
         else:
-            self.menu['Start at login'].state = False
+            self.menu[MENU_START_AT_LOGIN].state = False
 
         # Set and start get_messages
         self.get_messages_timer = rumps.Timer(self.get_messages_wrapper,
@@ -116,27 +129,20 @@ class MenuBarGmail(rumps.App):
         if autostart:
             self.start()
 
-    @rumps.clicked('About')
-    def about(self, sender):
-        rumps.alert(title='%s' % __prog__,
-                    message='Gmail notification in Menu bar.\n' +
-                    'Version %s\n' % __version__ +
-                    '%s' % __copyright__)
-
-    @rumps.clicked('Account')
+    @rumps.clicked(MENU_ACCOUNT)
     def account(self, sender):
         self.open_gmail()
 
-    @rumps.clicked('Check now')
+    @rumps.clicked(MENU_CHECK_NOW)
     def check_now(self, sender):
         self.get_messages()
 
-    @rumps.clicked('Reconnect')
+    @rumps.clicked(MENU_RECONNECT)
     def recoonect(self, sender):
         self.build_service(True)
         self.restart()
 
-    @rumps.clicked('Set checking interval')
+    @rumps.clicked(MENU_SET_CHECKING_INTERVAL)
     def set_interval(self, sender):
         # Need to stop timer job, otherwise interval can not be changed.
         self.stop()
@@ -151,7 +157,7 @@ class MenuBarGmail(rumps.App):
 
         self.start()
 
-    @rumps.clicked('Set labels')
+    @rumps.clicked(MENU_SET_LABELS)
     def set_labels(self, sender):
         response = rumps.Window('Set labels (comma-separeted list).\n'
                                 'If "labels" is empty and filter is not set,'
@@ -165,7 +171,7 @@ class MenuBarGmail(rumps.App):
 
             self.restart()
 
-    @rumps.clicked('Set filter')
+    @rumps.clicked(MENU_SET_FILTER)
     def set_filter(self, sender):
         response = rumps.Window('Set filter.\n'
                                 'e.g. "newer_than:1w"'
@@ -181,20 +187,20 @@ class MenuBarGmail(rumps.App):
 
             self.restart()
 
-    @rumps.clicked('MenuBar Icon for Dark')
+    @rumps.clicked(MENU_MENUBAR_ICON_FOR_DARK)
     def set_filter(self, sender):
         sender.state = not sender.state
         self.settings['menubariconfordark'] = str(sender.state)
         self.icon = self.menu_bar_icon[int(self.settings.get('menubariconfordark', 1))]
         self.write_settings()
 
-    @rumps.clicked('Mail notification')
+    @rumps.clicked(MENU_MAIL_NOTIFICATION)
     def mail_notification(self, sender):
         sender.state = not sender.state
         self.settings['notification'] = str(sender.state)
         self.write_settings()
 
-    @rumps.clicked('Start at login')
+    @rumps.clicked(MENU_START_AT_LOGIN)
     def set_startup(self, sender):
         sender.state = not sender.state
         if sender.state == 0:
@@ -223,12 +229,19 @@ class MenuBarGmail(rumps.App):
         self.settings['startatlogin'] = str(sender.state)
         self.write_settings()
 
-    @rumps.clicked('Uninstall')
+    @rumps.clicked(MENU_UNINSTALL)
     def uninstall(self, sender):
         ret = rumps.alert('Do you want to uninstall MenuBarGmail?',
                           ok='OK', cancel='Cancel')
         if ret == 1:
             self.remove_me()
+
+    @rumps.clicked(MENU_ABOUT)
+    def about(self, sender):
+        rumps.alert(title='%s' % __prog__,
+                    message='Gmail notification in Menu bar.\n' +
+                    'Version %s\n' % __version__ +
+                    '%s' % __copyright__)
 
     def error_check(func):
         def wrapper(*args, **kargs):
@@ -333,7 +346,7 @@ class MenuBarGmail(rumps.App):
             if k in all_ids}
 
         # Set menu's title
-        um_menu = self.menu['Unread messages']
+        um_menu = self.menu[MENU_UNREAD_MESSAGES]
         um_menu.title = 'Unread messages: %d' % len(all_ids)
 
         # Set menubar icon's title
@@ -341,6 +354,7 @@ class MenuBarGmail(rumps.App):
             self.title = ''
         else:
             self.title = '%d' % len(all_ids)
+
         # Reset menu bar icon after title is put,
         # to adjust the width.
         self.icon = self.menu_bar_icon[int(self.settings.get('menubariconfordark', 1))]
@@ -398,8 +412,7 @@ class MenuBarGmail(rumps.App):
                 self.message_contents[i]['body'] = message['snippet']
 
             # Popup notification
-            if is_new and not self.is_first\
-                    and self.menu['Mail notification'].state:
+            if is_new and not self.is_first and self.menu[MENU_MAIL_NOTIFICATION].state:
                 rumps.notification(
                     title='Mail from %s' %
                     self.message_contents[i]['FromName'],
@@ -499,7 +512,7 @@ class MenuBarGmail(rumps.App):
 
         prof = self.timeout_execute(service.users().getProfile(userId='me'))
         self.address = prof['emailAddress']
-        self.menu['Account'].title = 'Account: %s' % self.address
+        self.menu[MENU_ACCOUNT].title = 'Account: %s' % self.address
 
         return service
 
