@@ -10,7 +10,7 @@ from setuptools import setup
 APP = ['MenuBarGmail.py']
 DATA_FILES = []
 OPTIONS = {
-    'argv_emulation': True,
+    'argv_emulation': False,
     'plist': {
         'LSUIElement': True,
     },
