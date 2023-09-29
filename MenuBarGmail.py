@@ -109,6 +109,7 @@ class MenuBarGmail(rumps.App):
         self.service = None
         self.is_first = True
 
+        self.menu[MENU_MENUBAR_ICON_FOR_DARK].state = self.settings_state('menubariconfordark')
         self.menu[MENU_MAIL_NOTIFICATION].state = self.settings_state('notification')
         self.menu[MENU_START_AT_LOGIN].state = self.settings_state('startatlogin')
 
