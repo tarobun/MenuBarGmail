@@ -12,7 +12,7 @@ Multi-label can be set to be checked.
 
 Short information of unread messages are shown in the menu.
 
-New message notification is also available, too.
+New message notification is also available too.
 
 # Installation
 
