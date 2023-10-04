@@ -114,19 +114,19 @@ class MenuBarGmail(rumps.App):
         self.menu[MENU_START_AT_LOGIN].state = self.settings_state('startatlogin')
 
         # Set and start get_messages
-        self.get_messages_timer = rumps.Timer(self.get_messages_wrapper,
-                                              int(self.settings['interval'])
-                                              if 'interval' in self.settings
-                                              else 60)
+        self.get_messages_timer = rumps.Timer(self.get_messages_wrapper, self.settings_value('interval', 60))
         if autostart:
             self.start()
 
     def menubar_icon(self):
-        icon_index = int(self.settings.get('menubariconfordark', 1))
+        icon_index = self.settings_value('menubariconfordark', 1)
         return self.menu_bar_icon[icon_index]
 
     def settings_state(self, name):
         return True if name in self.settings and self.settings[name] == '1' else False
+
+    def settings_value(self, name, default_value):
+        return self.settings[name] if name in self.settings else default_value
 
     @rumps.clicked(MENU_INBOX)
     def account(self, sender):
@@ -160,8 +160,7 @@ class MenuBarGmail(rumps.App):
         response = rumps.Window('Set labels (comma-separeted list).\n'
                                 'If "labels" is empty and filter is not set,'
                                 ' INBOX is checked.',
-                                default_text=self.settings['labels']
-                                if 'labels' in self.settings else '',
+                                default_text=self.settings_value('labels', ''),
                                 dimensions=(400, 20)).run()
         if response.clicked:
             self.settings['labels'] = response.text.upper()
@@ -176,8 +175,7 @@ class MenuBarGmail(rumps.App):
                                 ' for mails within a week\n'
                                 'ref:'
                                 'https://support.google.com/mail/answer/7190',
-                                default_text=self.settings['filter']
-                                if 'filter' in self.settings else '',
+                                default_text=self.settings_value('filter', ''),
                                 dimensions=(400, 20)).run()
         if response.clicked:
             self.settings['filter'] = response.text.upper()
@@ -269,8 +267,7 @@ class MenuBarGmail(rumps.App):
         if 'labels' in self.settings and self.settings['labels'] != '':
             for l in self.settings['labels'].split(','):
                 labels.append(l.strip())
-                if l != 'INBOX':
-                    is_inbox_only = False
+                is_inbox_only = True if l == 'INBOX' else False
         elif 'filter' not in self.settings or self.settings['filter'].strip() == '':
             labels.append('INBOX')
 
@@ -287,7 +284,7 @@ class MenuBarGmail(rumps.App):
             labels.append('None')
 
         # Get message ids
-        query = 'label:unread ' + (self.settings['filter'] if 'filter' in self.settings else '')
+        query = 'label:unread ' + self.settings_value('filter', '')
         ids = {}
         is_new = False
         for l in labels:
@@ -455,10 +452,8 @@ class MenuBarGmail(rumps.App):
 
         if commandline or self.debug_mode:
             print('')
-            print('labels: %s' % (self.settings['labels']
-                                  if 'labels' in self.settings else ''))
-            print('filter: %s' % (self.settings['filter']
-                                  if 'filter' in self.settings else ''))
+            print('labels: %s' % self.settings_value('labels', ''))
+            print('filter: %s' % self.settings_value('filter', ''))
             print('Total number of unread messages: %d\n' % len(all_ids))
             for l in labels:
                 if len(labels) > 1:
