@@ -137,7 +137,7 @@ class MenuBarGmail(rumps.App):
         self.get_messages()
 
     @rumps.clicked(MENU_RECONNECT)
-    def recoonect(self, sender):
+    def reconnect(self, sender):
         self.build_service(True)
         self.restart()
 
