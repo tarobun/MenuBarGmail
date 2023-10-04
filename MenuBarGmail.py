@@ -114,19 +114,19 @@ class MenuBarGmail(rumps.App):
         self.menu[MENU_START_AT_LOGIN].state = self.settings_state('startatlogin')
 
         # Set and start get_messages
-        self.get_messages_timer = rumps.Timer(self.get_messages_wrapper, self.settings_value('interval', 60))
+        self.get_messages_timer = rumps.Timer(self.get_messages_wrapper, int(self.settings_value('interval', 60)))
         if autostart:
             self.start()
 
     def menubar_icon(self):
-        icon_index = self.settings_value('menubariconfordark', 1)
+        icon_index = int(self.settings_value('menubariconfordark', 1))
         return self.menu_bar_icon[icon_index]
-
-    def settings_state(self, name):
-        return True if name in self.settings and self.settings[name] == '1' else False
 
     def settings_value(self, name, default_value):
         return self.settings[name] if name in self.settings else default_value
+
+    def settings_state(self, name):
+        return True if self.settings_value(name, '') == '1' else False
 
     @rumps.clicked(MENU_INBOX)
     def account(self, sender):
@@ -353,13 +353,14 @@ class MenuBarGmail(rumps.App):
         # Get message contents
         n_get = 0
         for i in all_ids:
-            if i in self.message_contents\
-                    and 'Subject' in self.message_contents[i]:
+            if i in self.message_contents and 'Subject' in self.message_contents[i]:
                 continue
+
             is_new = True if i not in self.message_contents else False
             self.message_contents[i] = {}
             if n_get >= self.mails_max_get:
                 continue
+
             n_get += 1
             message = self.timeout_execute(
                 self.get_service().users().messages().get(
