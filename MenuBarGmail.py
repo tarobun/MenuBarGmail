@@ -131,6 +131,7 @@ class MenuBarGmail(rumps.App):
     @rumps.clicked(MENU_INBOX)
     def account(self, sender):
         self.open_gmail()
+        rumps.Timer(self.get_messages, int(self.settings_value('interval', 60)) / 2).start()
 
     @rumps.clicked(MENU_CHECK_NOW)
     def check_now(self, sender):
