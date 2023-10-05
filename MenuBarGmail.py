@@ -263,15 +263,14 @@ class MenuBarGmail(rumps.App):
     @error_check
     def get_messages(self, commandline=False):
         # Set labels
-        is_inbox_only = True
         labels = []
         if 'labels' in self.settings and self.settings['labels'] != '':
             for l in self.settings['labels'].split(','):
                 labels.append(l.strip())
-                is_inbox_only = True if l == 'INBOX' else False
         elif 'filter' not in self.settings or self.settings['filter'].strip() == '':
             labels.append('INBOX')
 
+        is_inbox_only = True if 'INBOX' in labels and len(labels) == 1 else False
         if not is_inbox_only:
             # Get labelIds
             label_name_id = {x['name'].upper().replace('/', '-'): x['id']
