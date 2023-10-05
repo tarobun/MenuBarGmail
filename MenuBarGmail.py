@@ -131,7 +131,7 @@ class MenuBarGmail(rumps.App):
     @rumps.clicked(MENU_INBOX)
     def account(self, sender):
         self.open_gmail()
-        rumps.Timer(self.get_messages, int(self.settings_value('interval', 60)) / 2).start()
+        rumps.Timer(self.get_messages, 10).start()
 
     @rumps.clicked(MENU_CHECK_NOW)
     def check_now(self, sender):
@@ -153,8 +153,7 @@ class MenuBarGmail(rumps.App):
             self.get_messages_timer.interval = int(response.text)
             self.settings['interval'] = response.text
             self.write_settings()
-
-        self.start()
+            self.restart()
 
     @rumps.clicked(MENU_SET_LABELS)
     def set_labels(self, sender):
@@ -166,7 +165,6 @@ class MenuBarGmail(rumps.App):
         if response.clicked:
             self.settings['labels'] = response.text.upper()
             self.write_settings()
-
             self.restart()
 
     @rumps.clicked(MENU_SET_FILTER)
@@ -227,8 +225,7 @@ class MenuBarGmail(rumps.App):
 
     @rumps.clicked(MENU_UNINSTALL)
     def uninstall(self, sender):
-        ret = rumps.alert('Do you want to uninstall MenuBarGmail?',
-                          ok='OK', cancel='Cancel')
+        ret = rumps.alert('Do you want to uninstall MenuBarGmail?', ok='OK', cancel='Cancel')
         if ret == 1:
             self.remove_me()
 
@@ -271,14 +268,16 @@ class MenuBarGmail(rumps.App):
             labels.append('INBOX')
 
         is_inbox_only = True if 'INBOX' in labels and len(labels) == 1 else False
+
         if not is_inbox_only:
-            # Get labelIds
+            # Get label ids
             label_name_id = {x['name'].upper().replace('/', '-'): x['id']
                              for x in self.timeout_execute(
                                      self.get_service().users().labels()
                                      .list(userId='me'))['labels']}
         else:
             label_name_id = {'INBOX': 'INBOX', 'None': None}
+
         labels = [x for x in labels if x.replace('/', '-') in label_name_id]
         if len(labels) == 0:
             labels.append('None')
@@ -362,26 +361,22 @@ class MenuBarGmail(rumps.App):
                 continue
 
             n_get += 1
-            message = self.timeout_execute(
-                self.get_service().users().messages().get(
-                    userId='me', id=i))
+            message = self.timeout_execute(self.get_service().users().messages().get(userId='me', id=i))
 
             for k in ['labelIds', 'snippet', 'threadId']:
                 self.message_contents[i][k] = message[k]
 
             for x in message['payload']['headers']:
-                if x['name'] == 'Subject':
-                    self.message_contents[i]['Subject'] = x['value']
-                elif x['name'] == 'Date':
-                    self.message_contents[i]['Date'] =\
-                        x['value'].split(', ')[1].split(' +')[0]
-                elif x['name'] == 'From':
-                    self.message_contents[i]['FromName'] =\
-                        self.get_address_name(x['value'])
-                    self.message_contents[i]['From'] = x['value']
-                elif x['name'] in ['Subject', 'To', 'Cc', 'Bcc',
-                                   'In-Reply-To', 'References']:
-                    self.message_contents[i][x['name']] = x['value']
+                match x['name']:
+                    case 'Subject':
+                        self.message_contents[i]['Subject'] = x['value']
+                    case 'Date':
+                        self.message_contents[i]['Date'] = x['value'].split(', ')[1].split(' +')[0]
+                    case 'From':
+                        self.message_contents[i]['FromName'] = self.get_address_name(x['value'])
+                        self.message_contents[i]['From'] = x['value']
+                    case ['Subject' | 'To' | 'Cc' | 'Bcc' | 'In-Reply-To' | 'References']:
+                        self.message_contents[i][x['name']] = x['value']
 
             for k in ['To', 'Cc']:
                 if k not in self.message_contents[i]:
@@ -393,12 +388,11 @@ class MenuBarGmail(rumps.App):
                     if 'body' in p and 'data' in p['body']:
                         body = p['body']['data']
                         break
-                if body is None and 'body' in message['payload']\
-                        and 'data' in message['payload']['body']:
+                if body is None and 'body' in message['payload'] and 'data' in message['payload']['body']:
                     body = message['payload']['body']['data']
                 if body is not None:
-                    self.message_contents[i]['body']\
-                        = base64.urlsafe_b64decode(body.encode('UTF-8'))
+                    self.message_contents[i]['body'] = base64.urlsafe_b64decode(body.encode('UTF-8'))
+
             if body is None:
                 self.message_contents[i]['body'] = message['snippet']
 
@@ -435,10 +429,7 @@ class MenuBarGmail(rumps.App):
                 threadIds.append(v['threadId'])
                 title = '%s %s | %s' % (v['Date'], v['FromName'], v['Subject'])
                 title = title[0:80]
-                if len(labels) > 1:
-                    m = um_menu[l]
-                else:
-                    m = um_menu
+                m = um_menu[l] if len(labels) > 1 else um_menu
                 if len(m) < self.mails_max_show:
                     m.add(
                         rumps.MenuItem(
