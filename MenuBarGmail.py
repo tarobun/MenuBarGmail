@@ -371,7 +371,8 @@ class MenuBarGmail(rumps.App):
                     case 'Subject':
                         self.message_contents[i]['Subject'] = x['value']
                     case 'Date':
-                        self.message_contents[i]['Date'] = x['value'].split(', ')[1].split(' +')[0]
+                        d = dateutil.parser.parse(x['value'].split(', ')[1].split(' +')[0])
+                        self.message_contents[i]['Date'] = d.strftime("%d %b %Y %H:%M")
                     case 'From':
                         self.message_contents[i]['FromName'] = self.get_address_name(x['value'])
                         self.message_contents[i]['From'] = x['value']
@@ -417,17 +418,14 @@ class MenuBarGmail(rumps.App):
                     l,
                     callback=lambda x, y=l: self.open_gmail(y)))
                 um_menu[l].title = '%s: %d' % (l, len(ids[l]))
-            for i in sorted([i for i in self.messages[l]
-                             if 'Subject' in self.message_contents[i]],
-                            key=lambda x: dateutil.parser.parse(
-                                self.message_contents[x]['Date'])
-                            .isoformat(),
+            for i in sorted([i for i in self.messages[l] if 'Subject' in self.message_contents[i]],
+                            key=lambda x: self.message_contents[x]['Date'],
                             reverse=True):
                 v = self.message_contents[i]
                 if v['threadId'] in threadIds:
                     continue
                 threadIds.append(v['threadId'])
-                title = '%s %s | %s' % (v['Date'], v['FromName'], v['Subject'])
+                title = '%s | %s | %s' % (v['Date'], v['FromName'], v['Subject'])
                 title = title[0:80]
                 m = um_menu[l] if len(labels) > 1 else um_menu
                 if len(m) < self.mails_max_show:
