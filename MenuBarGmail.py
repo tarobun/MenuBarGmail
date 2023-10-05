@@ -431,11 +431,9 @@ class MenuBarGmail(rumps.App):
                 title = title[0:80]
                 m = um_menu[l] if len(labels) > 1 else um_menu
                 if len(m) < self.mails_max_show:
-                    m.add(
-                        rumps.MenuItem(
+                    m.add(rumps.MenuItem(
                             l+str(i),
-                            callback=lambda x, y=l, z=i:
-                            self.show_mail(y, z)))
+                            callback=lambda x, y=l, z=i:self.show_mail(y, z)))
                     m[l+str(i)].title = title
                     m[l+str(i)].add(rumps.MenuItem(
                         l+str(i)+'snippet',
@@ -447,14 +445,14 @@ class MenuBarGmail(rumps.App):
             print('labels: %s' % self.settings_value('labels', ''))
             print('filter: %s' % self.settings_value('filter', ''))
             print('Total number of unread messages: %d\n' % len(all_ids))
-            for l in labels:
-                if len(labels) > 1:
+            if len(labels) == 1:
+                for i in um_menu.values():
+                    print(i.title)
+            else:
+                for l in labels:
                     print('%d messages for %s' % (len(ids[l]), l))
                     for i in um_menu[l].values():
-                        print('%s\n' % i.title)
-                else:
-                    for i in um_menu.values():
-                        print('%s\n' % i.title)
+                        print(i.title)
 
     def read_settings(self):
         if not os.path.exists(self.setting_file):
@@ -554,11 +552,8 @@ class MenuBarGmail(rumps.App):
         if os.path.exists(self.plist_file):
             os.system('launchctl unload %s' % self.plist_file)
             os.remove(self.plist_file)
-        os.system('rm -f %s %s' % (self.authentication_file,
-                                   self.setting_file))
-        os.system('rm -rf "%s/%s"' %
-                  (os.environ['HOME'],
-                   '/Library/Application Support/MenuBarGmail'))
+        os.system('rm -f %s %s' % (self.authentication_file, self.setting_file))
+        os.system('rm -rf "%s/%s"' % (os.environ['HOME'], '/Library/Application Support/MenuBarGmail'))
 
     def remove_me(self):
         self.reset()
