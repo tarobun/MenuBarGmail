@@ -13,12 +13,13 @@ import re
 import argparse
 import base64
 import dateutil.parser
-import webbrowser
-import urllib
+import dateutil.tz
 import httplib2
+import rumps
 import socket
 import signal
-import rumps
+import urllib
+import webbrowser
 from email.mime.text import MIMEText
 from oauth2client.file import Storage
 from oauth2client.tools import run_flow, argparser
@@ -405,7 +406,9 @@ class MenuBarGmail(rumps.App):
                         self.message_contents[i]["Subject"] = val
                     case "Date":
                         d = dateutil.parser.parse(val.split(", ")[1].split(" +")[0])
-                        self.message_contents[i]["Date"] = d.strftime("%d %b %Y %H:%M")
+                        utc_date = d.replace(tzinfo=dateutil.tz.tzutc())
+                        local_date = utc_date.astimezone(dateutil.tz.tzlocal())
+                        self.message_contents[i]["Date"] = local_date.strftime("%d %b %Y %H:%M")
                     case "From":
                         self.message_contents[i]["FromName"] = self.get_addr_name(val)
                         self.message_contents[i]["From"] = val
