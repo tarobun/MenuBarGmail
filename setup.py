@@ -13,6 +13,7 @@ OPTIONS = {
     'argv_emulation': False,
     'plist': {
         'LSUIElement': True,
+        'CFBundleIdentifier': 'rumps',
     },
     'iconfile': 'MenuBarGmail.icns',
     'resources': [

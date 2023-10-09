@@ -372,7 +372,6 @@ class MenuBarGmail(rumps.App):
 
         # Set menu's title
         um_menu = self.menu[MENU_UNREAD_MESSAGES]
-        um_menu.set_callback(None if len(all_ids) == 0 else self.unread_messages)
         um_menu.title = "Unread messages: %d" % len(all_ids)
 
         # Set menubar icon's title
@@ -447,7 +446,8 @@ class MenuBarGmail(rumps.App):
                 self.message_contents[i]["body"] = message["snippet"]
 
             # Popup notification
-            if is_new and not self.is_first and self.menu[MENU_MAIL_NOTIFICATION].state:
+            notify = self.menu[MENU_MAIL_NOTIFICATION].state == 1
+            if is_new and notify and not self.is_first:
                 rumps.notification(
                     title="Mail from %s" % self.message_contents[i]["FromName"],
                     subtitle=self.message_contents[i]["Subject"],
