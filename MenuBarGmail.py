@@ -151,10 +151,6 @@ class MenuBarGmail(rumps.App):
         self.build_service(True)
         self.restart()
 
-    @rumps.clicked(MENU_UNREAD_MESSAGES)
-    def unread_messages(self, sender):
-        pass
-
     @rumps.clicked(MENU_SET_CHECKING_INTERVAL)
     def set_interval(self, sender):
         # Need to stop timer job, otherwise interval can not be changed.
@@ -377,8 +373,10 @@ class MenuBarGmail(rumps.App):
         # Set menubar icon's title
         if len(all_ids) == 0:
             self.title = ""
+            um_menu.set_callback(None)
         else:
             self.title = "%d" % len(all_ids)
+            um_menu.set_callback(self.get_messages)
 
         # Reset menu bar icon after title is put,
         # to adjust the width.
