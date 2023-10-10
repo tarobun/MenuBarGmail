@@ -279,6 +279,10 @@ class MenuBarGmail(rumps.App):
     def get_messages_wrapper(self, sender):
         self.get_messages()
 
+    @rumps.notifications
+    def notification_center(self, info):
+        self.show_mail("INBOX", info.data)
+
     @error_check
     def get_messages(self, commandline=False):
         # Set labels
@@ -361,6 +365,7 @@ class MenuBarGmail(rumps.App):
         for l in labels:
             all_ids += ids[l]
         all_ids = list(set(all_ids))
+        all_ids_count = len(all_ids)
 
         self.message_contents = {
             k: v for k, v in self.message_contents.items() if k in all_ids
@@ -368,18 +373,13 @@ class MenuBarGmail(rumps.App):
 
         # Set menu's title
         um_menu = self.menu[MENU_UNREAD_MESSAGES]
-        um_menu.title = "Unread messages: %d" % len(all_ids)
+        um_menu.title = "Unread messages: %d" % all_ids_count
+        um_menu.set_callback(None if all_ids_count == 0 else self.get_messages)
 
         # Set menubar icon's title
-        if len(all_ids) == 0:
-            self.title = ""
-            um_menu.set_callback(None)
-        else:
-            self.title = "%d" % len(all_ids)
-            um_menu.set_callback(self.get_messages)
+        self.title = "" if all_ids_count == 0 else "%d" % all_ids_count
 
-        # Reset menu bar icon after title is put,
-        # to adjust the width.
+        # Reset menu bar icon after title is put, to adjust the width.
         self.icon = self.menubar_icon()
 
         # Get message contents
@@ -450,6 +450,7 @@ class MenuBarGmail(rumps.App):
                     title="Mail from %s" % self.message_contents[i]["FromName"],
                     subtitle=self.message_contents[i]["Subject"],
                     message=self.message_contents[i]["snippet"],
+                    data=i,
                 )
 
         self.is_first = False
