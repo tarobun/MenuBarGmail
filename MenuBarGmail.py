@@ -357,7 +357,7 @@ class MenuBarGmail(rumps.App):
 
         # Check total number of messages
         # Remove duplication in different labels
-        all_ids = [{id for l in labels for id in ids.get(l, [])}]
+        all_ids = list({id for l in labels for id in ids.get(l, [])})
         all_ids_count = len(all_ids)
 
         self.message_contents = {
