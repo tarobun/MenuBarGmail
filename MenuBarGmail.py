@@ -300,7 +300,7 @@ class MenuBarGmail(rumps.App):
             label_name_id = {
                 x["name"].upper().replace("/", "-"): x["id"]
                 for x in self.timeout_execute(
-                    self.get_service().users().labels().list(userId="me")
+                    self.get_labels().list(userId="me")
                 )["labels"]
             }
         else:
@@ -316,10 +316,8 @@ class MenuBarGmail(rumps.App):
         is_new = False
         for l in labels:
             response = self.timeout_execute(
-                self.get_service()
-                .users()
-                .messages()
-                .list(userId="me", labelIds=label_name_id[l.replace("/", "-")], q=query)
+                self.get_messages()
+                    .list(userId="me", labelIds=label_name_id[l.replace("/", "-")], q=query)
             )
             ids[l] = []
             if "messages" in response:
@@ -328,15 +326,13 @@ class MenuBarGmail(rumps.App):
             while "nextPageToken" in response:
                 page_token = response["nextPageToken"]
                 response = self.timeout_execute(
-                    self.get_service()
-                    .users()
-                    .messages()
-                    .list(
-                        userId="me",
-                        labelIds=label_name_id[l.replace("/", "-")],
-                        q=query,
-                        pageToken=page_token,
-                    )
+                    self.get_messages()
+                        .list(
+                            userId="me",
+                            labelIds=label_name_id[l.replace("/", "-")],
+                            q=query,
+                            pageToken=page_token,
+                        )
                 )
                 ids[l].extend([x["id"] for x in response["messages"]])
 
@@ -395,7 +391,7 @@ class MenuBarGmail(rumps.App):
 
             n_get += 1
             message = self.timeout_execute(
-                self.get_service().users().messages().get(userId="me", id=i)
+                self.get_messages().get(userId="me", id=i)
             )
 
             for k in ["labelIds", "snippet", "threadId"]:
@@ -552,6 +548,15 @@ class MenuBarGmail(rumps.App):
             self.service = self.build_service()
         return self.service
 
+    def get_messages(self):
+        return self.get_service().users().messages()
+
+    def get_drafts(self):
+        return self.get_service().users().drafts()
+
+    def get_labels(self):
+        return self.get_service().users().labels()
+
     def authentication(self, storage):
         return run_flow(
             OAuth2WebServerFlow(
@@ -641,10 +646,7 @@ class MenuBarGmail(rumps.App):
             labels = [labels]
         msg_labels = {"addLabelIds": [], "removeLabelIds": labels}
         self.timeout_execute(
-            self.get_service()
-            .users()
-            .messages()
-            .modify(userId="me", id=msg_id, body=msg_labels)
+            self.get_messages().modify(userId="me", id=msg_id, body=msg_labels)
         )
 
     def mark_as_read(self, msg_id):
@@ -697,15 +699,12 @@ class MenuBarGmail(rumps.App):
 
             if response.clicked == 1:
                 self.timeout_execute(
-                    self.get_service().users().messages().send(userId="me", body=m)
+                    self.get_messages().send(userId="me", body=m)
                 )
 
             elif response.clicked == 2:
                 self.timeout_execute(
-                    self.get_service()
-                    .users()
-                    .drafts()
-                    .create(userId="me", body={"message": m})
+                    self.get_drafts().create(userId="me", body={"message": m})
                 )
 
     def timeout_execute(self, obj, t=1):
