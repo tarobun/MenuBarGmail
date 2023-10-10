@@ -297,11 +297,10 @@ class MenuBarGmail(rumps.App):
 
         if not is_inbox_only:
             # Get label ids
+            all_labels = self.timeout_execute(self.get_all_labels().list(userId="me"))
             label_name_id = {
                 x["name"].upper().replace("/", "-"): x["id"]
-                for x in self.timeout_execute(self.get_all_labels().list(userId="me"))[
-                    "labels"
-                ]
+                for x in all_labels["labels"]
             }
         else:
             label_name_id = {"INBOX": "INBOX", "None": None}
@@ -320,6 +319,7 @@ class MenuBarGmail(rumps.App):
                     userId="me", labelIds=label_name_id[l.replace("/", "-")], q=query
                 )
             )
+
             ids[l] = []
             if "messages" in response:
                 ids[l].extend([x["id"] for x in response["messages"]])
@@ -357,10 +357,7 @@ class MenuBarGmail(rumps.App):
 
         # Check total number of messages
         # Remove duplication in different labels
-        all_ids = []
-        for l in labels:
-            all_ids += ids[l]
-        all_ids = list(set(all_ids))
+        all_ids = [{id for l in labels for id in ids.get(l, [])}]
         all_ids_count = len(all_ids)
 
         self.message_contents = {
