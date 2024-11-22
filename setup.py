@@ -6,6 +6,7 @@ Usage:
 """
 
 from setuptools import setup
+import requests
 
 APP = ['MenuBarGmail.py']
 DATA_FILES = []
@@ -22,6 +23,9 @@ OPTIONS = {
         'cacerts.txt'],
     'packages': ['rumps']
 }
+
+r = requests.get('https://pki.goog/roots.pem', allow_redirects=True)
+open('cacerts.txt', 'wb').write(r.content)
 
 setup(
     app=APP,
